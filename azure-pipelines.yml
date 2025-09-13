@@ -16,6 +16,7 @@ jobs:
       inputs:
         provider: 'azurerm'
         command: 'init'
+        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
         backendServiceArm: 'ServiceVM'
         backendAzureRmOverrideSubscriptionID: 'b35c9afa-9045-49a7-852b-e7bffe5ca332' # from provider.tf
         backendAzureRmResourceGroupName: 'kolkata-resource'
@@ -44,6 +45,7 @@ jobs:
       inputs:
         provider: 'azurerm'
         command: 'init'
+        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
         backendServiceArm: 'ServiceVM'
         backendAzureRmOverrideSubscriptionID: 'b35c9afa-9045-49a7-852b-e7bffe5ca332'
         backendAzureRmResourceGroupName: 'kolkata-resource'
@@ -56,5 +58,6 @@ jobs:
       inputs:
         provider: 'azurerm'
         command: 'apply'
+        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
         commandOptions: '-auto-approve'
         environmentServiceNameAzureRM: 'ServiceVM'
