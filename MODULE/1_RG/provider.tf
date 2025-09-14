@@ -5,13 +5,19 @@ terraform {
       version = "4.40.0"
     }
   }
+backend "azurerm" {
+resource_group_name = "storage"
+storage_account_name = "statefile9120"
+container_name = "statefile"
+key = "terraform.tfstate"
+}
 }
 
 provider "azurerm" {
   # Configuration options
   features {}
 
-  subscription_id = "b35c9afa-9045-49a7-852b-e7bffe5ca332"
+  subscription_id = "258a8e61-bb4a-4a2e-99d2-ca7211e4a421"
 
   resource_provider_registrations = "none"
 }
