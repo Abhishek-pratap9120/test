@@ -1,63 +1,28 @@
 trigger: none
-pool: InfraVM
+
+pool: test-pool
 
 jobs:
-- job: build
-  displayName: buildinfra
-  steps:
-    - task: TerraformInstaller@1
-      displayName: Install Terraform
-      inputs:
-        terraformVersion: '1.13.2'
+ - job: "BuildStage"
+   displayName: BuildStage
+   steps:
+   - task: TerraformTask@5
+     inputs:
+       provider: 'azurerm'
+       command: 'init'
+       workingDirectory: '$(System.DefaultWorkingDirectory)/MODULE/1_RG'
+       backendServiceArm: 'test-service'
+       backendAzureRmStorageAccountName: 'statefile9120'
+       backendAzureRmContainerName: 'statefile'
+       backendAzureRmKey: 'terraform.tfstate'
 
-    # init using backend info from your .tf files
-    - task: TerraformTask@5
-      displayName: Terraform Init (build)
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
-        backendServiceArm: 'ServiceVM'
-        backendAzureRmOverrideSubscriptionID: 'b35c9afa-9045-49a7-852b-e7bffe5ca332' # from provider.tf
-        backendAzureRmResourceGroupName: 'kolkata-resource'
-        backendAzureRmStorageAccountName: 'kolkata7401'
-        backendAzureRmContainerName: 'kolkata-container'
-        backendAzureRmKey: 'kolkata.tfstate'
+   steps:
+   - task: TerraformTask@5
+     inputs:
+       provider: 'azurerm'
+       command: 'plan'
+       workingDirectory: '$(System.DefaultWorkingDirectory)/MODULE/1_RG'
+       environmentServiceNameAzureRM: 'test-service'
+        
 
-    - task: TerraformTask@5
-      displayName: Terraform Validate (build)
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
 
-- job: Install
-  displayName: Terraform Install
-  dependsOn: build
-  condition: succeeded('build')
-  steps:
-    - task: TerraformInstaller@1
-      displayName: Install Terraform (install job)
-      inputs:
-        terraformVersion: '1.13.2'
-
-    - task: TerraformTask@5
-      displayName: Terraform Init (install)
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
-        backendServiceArm: 'ServiceVM'
-        backendAzureRmOverrideSubscriptionID: 'b35c9afa-9045-49a7-852b-e7bffe5ca332'
-        backendAzureRmResourceGroupName: 'kolkata-resource'
-        backendAzureRmStorageAccountName: 'kolkata7401'
-        backendAzureRmContainerName: 'kolkata-container'
-        backendAzureRmKey: 'kolkata.tfstate'
-
-    - task: TerraformTask@5
-      displayName: Terraform Apply (install)
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        Configuration directory: $(System.DefaultWorkingDirectory)/MODULE/1_RG
-        commandOptions: '-auto-approve'
-        environmentServiceNameAzureRM: 'ServiceVM'
